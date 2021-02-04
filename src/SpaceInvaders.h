@@ -2,4 +2,4 @@
 #include "TextureHolder.h"
 #include <SFML/Graphics.hpp>
 
-Enemy* createEnemyLines(float width);
+Enemy *createEnemyLines(float width);
