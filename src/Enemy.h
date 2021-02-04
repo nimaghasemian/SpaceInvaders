@@ -7,22 +7,23 @@ class Enemy
 private:
     Vector2f m_Position;
     Sprite m_Sprite;
-    float m_SpeedX= 200.0f; //speed when goint Right or Left
+    static float m_SpeedX; //speed when goint Right or Left
     float m_SpeedY= 1000.0f; //speed when going down
     bool m_Alive = true;
-   static bool m_MovingHoriz;
-   static bool m_MovingDown;
+    static bool m_MovingHoriz;
+    static bool m_MovingDown;
   
     
 public:
     Enemy();
     void spawn(float startX, float startY);
-    void moveDown(Time dt);
-    void stopDown();
+    static void moveDown();
+    static void stopDown();
     FloatRect getPosition();
     Sprite getShape();
+    
     void changeDirection();
-    void update(Time dt);
+    void update(float timePassed);
     bool isAlive();
     bool hit();
 

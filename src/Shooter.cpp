@@ -6,10 +6,13 @@ Shooter::Shooter(float startX ,float startY){
     m_Sprite.setTexture(TextureHolder::GetTexture("resorces/graphics/space-invaders(2).png"));
     m_Position.x = startX;
     m_Position.y = startY;
+    m_Sprite.setOrigin(Vector2f(64,64));
     m_Sprite.setPosition(m_Position);
 
 }
-
+Vector2f Shooter::getCenter(){
+    return m_Position;
+}
 
 void Shooter::moveLeft(){
     m_MovingLeft = true;
