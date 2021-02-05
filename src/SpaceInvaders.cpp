@@ -67,7 +67,7 @@ int main() {
   }
   int currentBullet = 0;
   int totallBullets = 200;
-  int fireRate = 2;
+  int fireRate = 3;
   Time lastPressed;
   //enemy bomb
   Bullet bomb;
@@ -215,6 +215,7 @@ startSound.setBuffer(startBuffer);
       for (int i = 0; i < 60; i++) {
         if (godown == true)
           enemies[i].moveDown();
+        
         enemies[i].update(dtAsSeconds);
       }
       if (godown == false) {

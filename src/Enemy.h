@@ -11,6 +11,10 @@ private:
   bool m_Alive = true;
   bool m_MovingHoriz;
   bool m_MovingDown;
+  bool m_Exploding =false;
+  Time m_ExplodingTime;
+  Clock m_Clock;
+  
 
 public:
   Enemy();
