@@ -12,7 +12,22 @@ void Bullet::shoot(float startX, float startY) {
 bool Bullet::isInFlight() { return m_InFlight; }
 void Bullet::setType(int type) {
 
-  if (m_type == 2) {
+m_type = type;
+if (m_type == 4){
+        m_Sprite.setTexture(
+        TextureHolder::GetTexture("resorces/graphics/ammo.png"));
+    m_MovingUp = false;
+    m_MovingDown = true;
+    m_Speed = 100.0f;
+}
+else if(m_type == 3){
+      m_Sprite.setTexture(
+        TextureHolder::GetTexture("resorces/graphics/heart.png"));
+    m_MovingUp = false;
+    m_MovingDown = true;
+    m_Speed = 100.0f;
+}
+else if (m_type == 2) {
     m_Sprite.setTexture(
         TextureHolder::GetTexture("resorces/graphics/shooter-bullet-3-8.png"));
     m_MovingUp = true;
@@ -22,9 +37,11 @@ void Bullet::setType(int type) {
         TextureHolder::GetTexture("resorces/graphics/bomb-20-37.png"));
     m_MovingDown = true;
     m_MovingUp = false;
+    m_Speed = 200.0f;
   }
 }
 void Bullet::stop() {
+  m_Sprite.setPosition(-2000,-2000);
   m_InFlight = false;
 }
 FloatRect Bullet::getPosition() { return m_Sprite.getGlobalBounds(); }
@@ -35,7 +52,7 @@ void Bullet::update(float time) {
     if (m_MovingUp) {
       m_Position.y -= time * m_Speed;
     } else if (m_MovingDown) {
-      m_Position.y += 200 * time;
+      m_Position.y += m_Speed * time;
     }
   }
 

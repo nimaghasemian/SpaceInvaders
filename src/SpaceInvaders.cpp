@@ -57,7 +57,6 @@ int main() {
                          textRect.top + textRect.height / 2.0f);
   gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
   Time dt;
-  float moveDownTime;
 
   /*******creating shooter bullets*******/
 
@@ -66,13 +65,29 @@ int main() {
     shooterBullets[i].setType(2);
   }
   int currentBullet = 0;
-  int totallBullets = 200;
+  int totallBullets = 100;
   int fireRate = 3;
   Time lastPressed;
   //enemy bomb
   Bullet bomb;
   bomb.setType(1);
   
+  
+  
+   /* ****heart dropper***** */
+  Bullet heartDropper;
+  heartDropper.setType(3);
+  srand(time(0));
+  int randomDropper = rand() % 60;
+
+  /****** ammo dropper****** */
+  Bullet ammoDropper;
+  ammoDropper.setType(4);
+  srand(time(0)*100);
+  int randomDropper2  = rand() % 60;
+
+
+
   //*****************Adding sounds***********************
   SoundBuffer shooterDeathBuffer;
 shooterDeathBuffer.loadFromFile("sound/shooter_death.wav");
@@ -153,7 +168,7 @@ startSound.setBuffer(startBuffer);
         }
         bomb.stop();
         livingEnemies = 60;
-        totallBullets = 200;
+        totallBullets = 100;
         enemies = createEnemyLines(1920.0f);
         roundTime = clock.restart();
       }
@@ -199,6 +214,7 @@ startSound.setBuffer(startBuffer);
         }
       }
 
+      //drop the bomb
       srand(time(0));
       int randomBomber = rand() % 60;
       if (enemies[randomBomber].isAlive() && !bomb.isInFlight())
@@ -257,8 +273,15 @@ startSound.setBuffer(startBuffer);
                   enemies[j].getPosition()) &&
               enemies[j].isAlive() && shooterBullets[i].isInFlight()) {
             enemies[j].hit();
+           
             enemyDeathSound.play();
             livingEnemies--;
+            if(j == randomDropper){
+              heartDropper.shoot(enemies[j].getCenter().x,enemies[j].getCenter().y);
+              }
+            if(j == randomDropper2){
+              ammoDropper.shoot(enemies[j].getCenter().x,enemies[j].getCenter().y);
+            }
             shooterBullets[i].stop();
           }
         }
@@ -303,6 +326,22 @@ startSound.setBuffer(startBuffer);
       }
     }
 
+    /**update heart dropper**/
+    if(heartDropper.getPosition().intersects(shooter.getPosition())){
+      heartDropper.stop();
+      shooter.increaseHealth();
+    }
+    if(heartDropper.isInFlight())
+      heartDropper.update(dt.asSeconds());
+
+    //**update ammo dropper**/
+    if(ammoDropper.getPosition().intersects(shooter.getPosition())){
+      ammoDropper.stop();
+      totallBullets += 50;
+    }
+    if(ammoDropper.isInFlight())
+      ammoDropper.update(dt.asSeconds());
+
     std::stringstream ss;
 
     ss << "High Score: " << highScore
@@ -335,7 +374,10 @@ startSound.setBuffer(startBuffer);
         gameState == GameState::Paused) {
       window.draw(gameoverText);
     }
-
+    if (heartDropper.isInFlight())
+      window.draw(heartDropper.getShape());
+    if (ammoDropper.isInFlight())
+      window.draw(ammoDropper.getShape());
     window.draw(hud);
     window.display();
   }

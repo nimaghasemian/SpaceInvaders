@@ -20,7 +20,7 @@ public:
   void stopLeft();
   void stopRight();
   bool isAlive();
-  bool increaseHealth();
+  void increaseHealth();
   bool hit();
   int shootersLive();
   FloatRect getPosition();

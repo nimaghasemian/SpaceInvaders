@@ -5,6 +5,7 @@
 #include <map>
 using namespace sf;
 using namespace std;
+
 class TextureHolder {
 private:
   // a map container from STL

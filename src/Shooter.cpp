@@ -29,6 +29,7 @@ void Shooter::moveLeft() { m_MovingLeft = true; }
 void Shooter::moveRight() { m_MovingRight = true; }
 void Shooter::stopLeft() { m_MovingLeft = false; }
 void Shooter::stopRight() { m_MovingRight = false; }
+void Shooter::increaseHealth(){m_lives++;}
 FloatRect Shooter ::getPosition() { return m_Sprite.getGlobalBounds(); }
 Sprite Shooter ::getShape() { return m_Sprite; }
 bool Shooter::isAlive() {
