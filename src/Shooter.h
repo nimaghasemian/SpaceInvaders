@@ -21,7 +21,7 @@ public:
   void stopRight();
   bool isAlive();
   void increaseHealth();
-  bool hit();
+  void hit();
   int shootersLive();
   FloatRect getPosition();
   Sprite getShape();

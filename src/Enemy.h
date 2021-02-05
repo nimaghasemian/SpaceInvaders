@@ -11,22 +11,21 @@ private:
   bool m_Alive = true;
   bool m_MovingHoriz;
   bool m_MovingDown;
-  bool m_Exploding =false;
+  bool m_Exploding = false;
   Time m_ExplodingTime;
   Clock m_Clock;
   
 
 public:
   Enemy();
-  bool movedDownOnce;
+  bool isAlive();
+  bool hit();
   void spawn(float startX, float startY);
   void moveDown();
   void stopDown();
   FloatRect getPosition();
   Sprite getShape();
   Vector2f getCenter();
-  void changeDirection();
   void update(float timePassed);
-  bool isAlive();
-  bool hit();
+
 };

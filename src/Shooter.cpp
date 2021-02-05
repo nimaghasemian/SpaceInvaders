@@ -20,9 +20,8 @@ void Shooter::spawn(float startX, float startY) {
   m_Sprite.setPosition(m_Position);
 }
 Vector2f Shooter::getCenter() { return m_Position; }
-bool Shooter::hit() {
+void Shooter::hit() {
   m_lives--;
-  return (m_lives > 0);
 }
 int Shooter::shootersLive() { return m_lives; }
 void Shooter::moveLeft() { m_MovingLeft = true; }
