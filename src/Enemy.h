@@ -14,7 +14,6 @@ private:
   bool m_Exploding = false;
   Time m_ExplodingTime;
   Clock m_Clock;
-  
 
 public:
   Enemy();
@@ -27,5 +26,4 @@ public:
   Sprite getShape();
   Vector2f getCenter();
   void update(float timePassed);
-
 };

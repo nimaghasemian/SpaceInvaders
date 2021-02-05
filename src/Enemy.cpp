@@ -2,13 +2,12 @@
 #include "TextureHolder.h"
 using namespace sf;
 
-
 Enemy::Enemy() {
   m_MovingDown = false;
   m_MovingHoriz = true;
   m_SpeedX = 100.0f;
   m_Sprite.setTexture(
-    TextureHolder::GetTexture("resorces/graphics/enemy40-30.png"));
+      TextureHolder::GetTexture("resorces/graphics/enemy40-30.png"));
 }
 
 void Enemy::spawn(float startX, float startY) {
@@ -24,9 +23,7 @@ void Enemy::moveDown() {
   m_SpeedX *= -1.2f;
 }
 
-void Enemy::stopDown() {
-  m_MovingDown = false;
-}
+void Enemy::stopDown() { m_MovingDown = false; }
 
 FloatRect Enemy::getPosition() { return m_Sprite.getGlobalBounds(); }
 Sprite Enemy::getShape() { return m_Sprite; }
@@ -47,7 +44,7 @@ Vector2f Enemy::getCenter() { return m_Position; }
 
 void Enemy ::update(float timePassed) {
 
-  if(m_Exploding){
+  if (m_Exploding) {
     m_ExplodingTime = m_Clock.getElapsedTime();
   }
 
@@ -57,15 +54,13 @@ void Enemy ::update(float timePassed) {
     }
     if (m_MovingDown) {
       m_Position.y += 5000 * timePassed;
-      m_MovingDown = false;//move down once
+      m_MovingDown = false; // move down once
     }
     m_Sprite.setPosition(m_Position);
+  } else {
+    if (m_ExplodingTime.asMilliseconds() > 200.0f && m_Exploding) {
+      m_Exploding = false;
+      m_Sprite.setColor(Color::Transparent); // to dissapear
+    }
   }
-  else{
-        if(m_ExplodingTime.asMilliseconds() > 200.0f && m_Exploding){
-          m_Exploding = false;
-          m_Sprite.setColor(Color::Transparent);//to dissapear
-      }
-  }
-
 }

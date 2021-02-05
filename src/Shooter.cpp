@@ -20,15 +20,13 @@ void Shooter::spawn(float startX, float startY) {
   m_Sprite.setPosition(m_Position);
 }
 Vector2f Shooter::getCenter() { return m_Position; }
-void Shooter::hit() {
-  m_lives--;
-}
+void Shooter::hit() { m_lives--; }
 int Shooter::shootersLive() { return m_lives; }
 void Shooter::moveLeft() { m_MovingLeft = true; }
 void Shooter::moveRight() { m_MovingRight = true; }
 void Shooter::stopLeft() { m_MovingLeft = false; }
 void Shooter::stopRight() { m_MovingRight = false; }
-void Shooter::increaseHealth(){m_lives++;}
+void Shooter::increaseHealth() { m_lives++; }
 FloatRect Shooter ::getPosition() { return m_Sprite.getGlobalBounds(); }
 Sprite Shooter ::getShape() { return m_Sprite; }
 bool Shooter::isAlive() {
