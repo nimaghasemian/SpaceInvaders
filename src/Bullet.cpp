@@ -26,7 +26,6 @@ void Bullet::setType(int type) {
 }
 void Bullet::stop() {
   m_InFlight = false;
-  m_Sprite.setPosition(Vector2f(2000, 2000));
 }
 FloatRect Bullet::getPosition() { return m_Sprite.getGlobalBounds(); }
 

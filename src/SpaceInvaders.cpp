@@ -3,8 +3,8 @@
 #include "Enemy.h"
 #include "Shooter.h"
 #include "TextureHolder.h"
-#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -69,14 +69,34 @@ int main() {
   int totallBullets = 200;
   int fireRate = 2;
   Time lastPressed;
-  // enemy bomb
+  //enemy bomb
   Bullet bomb;
   bomb.setType(1);
+  
+  //*****************Adding sounds***********************
+  SoundBuffer shooterDeathBuffer;
+shooterDeathBuffer.loadFromFile("sound/shooter_death.wav");
+Sound shooterDeathSound;
+shooterDeathSound.setBuffer(shooterDeathBuffer);
 
-  // bunch of control variables
+SoundBuffer enemyDeathBuffer;
+enemyDeathBuffer.loadFromFile("sound/invader_death.wav");
+Sound enemyDeathSound;
+enemyDeathSound.setBuffer(enemyDeathBuffer);
 
+SoundBuffer shootBuffer;
+shootBuffer.loadFromFile("sound/shoot_laser.wav");
+Sound shootSound;
+shootSound.setBuffer(shootBuffer);
+
+SoundBuffer startBuffer;
+startBuffer.loadFromFile("sound/start.wav");
+Sound startSound;
+startSound.setBuffer(startBuffer);
+  //bunch of control variables
+  
   int livingEnemies = 60;
-  bool godown = false;
+  bool godown = false;    
   Time roundTime;
 
   /*******MAIN GAME LOOP**********/
@@ -109,6 +129,7 @@ int main() {
                    gameState == GameState::Starting) {
           roundTime = clock.restart();
           gameState = GameState::Playing;
+          startSound.play();
         }
       }
     }
@@ -121,6 +142,7 @@ int main() {
     if (gameState == GameState::GameOver) {
       if (event.key.code == Keyboard::R) {
         gameState = GameState::Playing;
+        startSound.play();
       }
       if (gameState == GameState::Playing) {
         shooter.spawn(1920 / 2, 1080 - 100);
@@ -156,6 +178,7 @@ int main() {
                                                 shooter.getCenter().y);
             currentBullet++;
             totallBullets--;
+            shootSound.play();
             if (currentBullet > 99) {
               currentBullet = 0;
             }
@@ -215,11 +238,11 @@ int main() {
 
         for (int j = 0; j < 60; j++) {
           /**********************checking enemies collision with shooter*******/
-          if (shooter.getPosition().top <
-              enemies[j].getPosition().top + enemies[j].getPosition().height) {
+          if (shooter.getPosition().top < enemies[j].getPosition().top + enemies[j].getPosition().height) {
             gameState = GameState ::GameOver;
             gameoverText.setFillColor(Color::Red);
             gameoverText.setString("GAME OVER!");
+            shooterDeathSound.play();
             FloatRect textRect = gameoverText.getLocalBounds();
             gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
                                    textRect.top + textRect.height / 2.0f);
@@ -231,6 +254,7 @@ int main() {
                   enemies[j].getPosition()) &&
               enemies[j].isAlive() && shooterBullets[i].isInFlight()) {
             enemies[j].hit();
+            enemyDeathSound.play();
             livingEnemies--;
             shooterBullets[i].stop();
           }
@@ -254,13 +278,14 @@ int main() {
       if (bomb.getPosition().top > 1080)
         bomb.stop();
       if (bomb.getPosition().intersects(shooter.getPosition())) {
-        if (shooter.isAlive()) {
+        if (shooter.isAlive() && bomb.isInFlight()) {
           shooter.hit();
           bomb.stop();
         }
         if (!shooter.isAlive()) {
           gameoverText.setFillColor(Color::Red);
           gameoverText.setString("GAME OVER!");
+          shooterDeathSound.play();
           FloatRect textRect = gameoverText.getLocalBounds();
           gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
                                  textRect.top + textRect.height / 2.0f);
