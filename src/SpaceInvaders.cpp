@@ -3,12 +3,15 @@
 #include "Enemy.h"
 #include "Shooter.h"
 #include "TextureHolder.h"
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 using namespace sf;
+
 enum class GameState { Playing, Paused, GameOver, Starting };
+
 int main() {
   Clock clock;
   Time gameTime;
@@ -20,13 +23,18 @@ int main() {
   Sprite background;
   background.setTexture(
       TextureHolder::GetTexture("resorces/graphics/backgroud.jpg"));
+
   /******Creating the Shooter*******/
+
   Shooter shooter(1920 / 2, 1080 - 100);
 
   /******Creating enemys**********/
+
   Enemy *enemies = nullptr;
   enemies = createEnemyLines(1920.0f);
+
   // create a Text object called HUD
+
   Text hud;
   Font font;
   Font digitalFont;
@@ -36,7 +44,9 @@ int main() {
   hud.setCharacterSize(50);
   hud.setFillColor(Color::Yellow);
   hud.setPosition(20, 20);
+
   // setting GAMEOVER text
+
   Text gameoverText;
   gameoverText.setFont(font);
   gameoverText.setCharacterSize(70);
@@ -48,7 +58,9 @@ int main() {
   gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
   Time dt;
   float moveDownTime;
+
   /*******creating shooter bullets*******/
+
   Bullet shooterBullets[100];
   for (int i = 0; i < 100; i++) {
     shooterBullets[i].setType(2);
@@ -57,13 +69,18 @@ int main() {
   int totallBullets = 200;
   int fireRate = 2;
   Time lastPressed;
-
+  // enemy bomb
   Bullet bomb;
   bomb.setType(1);
+
+  // bunch of control variables
+
   int livingEnemies = 60;
   bool godown = false;
   Time roundTime;
+
   /*******MAIN GAME LOOP**********/
+
   while (window.isOpen()) {
     dt = clock.restart();
     gameTime += dt;
@@ -198,7 +215,8 @@ int main() {
 
         for (int j = 0; j < 60; j++) {
           /**********************checking enemies collision with shooter*******/
-          if (shooter.getPosition().top < enemies[j].getPosition().top + enemies[j].getPosition().height) {
+          if (shooter.getPosition().top <
+              enemies[j].getPosition().top + enemies[j].getPosition().height) {
             gameState = GameState ::GameOver;
             gameoverText.setFillColor(Color::Red);
             gameoverText.setString("GAME OVER!");

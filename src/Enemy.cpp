@@ -5,7 +5,7 @@ using namespace sf;
 Enemy::Enemy() {
   m_MovingDown = false;
   m_MovingHoriz = true;
-  m_SpeedX = 200.0f;
+  m_SpeedX = 2000.0f;
 }
 
 void Enemy::spawn(float startX, float startY) {
@@ -20,13 +20,11 @@ void Enemy::spawn(float startX, float startY) {
 void Enemy::moveDown() {
 
   m_MovingDown = true;
-  m_MovingHoriz = false;
+  m_SpeedX *= -1;
 }
 void Enemy ::stopDown() {
   if (m_MovingDown) {
     m_MovingDown = false;
-    m_MovingHoriz = true;
-    m_SpeedX *= -1;
   }
 }
 FloatRect Enemy ::getPosition() { return m_Sprite.getGlobalBounds(); }
@@ -50,11 +48,9 @@ void Enemy ::update(float timePassed) {
       m_Position.x += timePassed * m_SpeedX;
     }
 
-    else if (m_MovingDown) {
-      m_Position.y += 10;
+    if (m_MovingDown) {
+      m_Position.y += 5000 * timePassed;
       m_MovingDown = false;
-      m_MovingHoriz = true;
-      m_SpeedX *= -1;
     }
   }
 
