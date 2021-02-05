@@ -6,12 +6,13 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 using namespace sf;
-enum class GameState { Playing, Paused, GameOver };
+enum class GameState { Playing, Paused, GameOver, Starting };
 int main() {
   Clock clock;
   Time gameTime;
-  GameState gameState = GameState::Paused;
+  GameState gameState = GameState::Starting;
   TextureHolder holder;
 
   VideoMode vm(1920, 1080);
@@ -20,19 +21,31 @@ int main() {
   background.setTexture(
       TextureHolder::GetTexture("resorces/graphics/backgroud.jpg"));
   /******Creating the Shooter*******/
-  Shooter shooter(1920 / 2, 1080 - 130);
+  Shooter shooter(1920 / 2, 1080 - 100);
 
   /******Creating enemys**********/
   Enemy *enemies = nullptr;
   enemies = createEnemyLines(1920.0f);
-// create a Text object called HUD
-	Text hud;
-	Font font;
-	font.loadFromFile("fonts/The Led Display St.ttf");
-	hud.setFont(font);
-	hud.setCharacterSize(75);
-	hud.setFillColor(Color::White);
-	hud.setPosition(20,20);
+  // create a Text object called HUD
+  Text hud;
+  Font font;
+  Font digitalFont;
+  font.loadFromFile("fonts/The Led Display St.ttf");
+  digitalFont.loadFromFile("fonts/digital-7 (mono).ttf");
+  hud.setFont(digitalFont);
+  hud.setCharacterSize(50);
+  hud.setFillColor(Color::Yellow);
+  hud.setPosition(20, 20);
+  // setting GAMEOVER text
+  Text gameoverText;
+  gameoverText.setFont(font);
+  gameoverText.setCharacterSize(70);
+  gameoverText.setFillColor(Color::Magenta);
+  gameoverText.setString("Press Enter to Start the Game");
+  FloatRect textRect = gameoverText.getLocalBounds();
+  gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
+                         textRect.top + textRect.height / 2.0f);
+  gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
   Time dt;
   float moveDownTime;
   /*******creating shooter bullets*******/
@@ -41,44 +54,72 @@ int main() {
     shooterBullets[i].setType(2);
   }
   int currentBullet = 0;
-  int totallBullets = 100;
+  int totallBullets = 200;
   int fireRate = 2;
   Time lastPressed;
 
   Bullet bomb;
   bomb.setType(1);
+  int livingEnemies = 60;
   bool godown = false;
-
+  Time roundTime;
   /*******MAIN GAME LOOP**********/
   while (window.isOpen()) {
     dt = clock.restart();
     gameTime += dt;
+
     /*
      *****************************
      * handle the Player input
      *****************************
      */
-     Event event;
+    Event event;
     while (window.pollEvent(event)) {
       if (event.type == Event::KeyPressed) {
-        if (event.key.code == Keyboard::Return && gameState == GameState::Playing) {
+        if (event.key.code == Keyboard::Return &&
+            gameState == GameState::Playing) {
+          gameoverText.setString("Paused!");
+          FloatRect textRect = gameoverText.getLocalBounds();
+          gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
+                                 textRect.top + textRect.height / 2.0f);
+          gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
           gameState = GameState::Paused;
         } else if (event.key.code == Keyboard::Return &&
                    gameState == GameState::Paused) {
           gameState = GameState::Playing;
           clock.restart();
-        }}}
+        } else if (event.key.code == Keyboard::Return &&
+                   gameState == GameState::Starting) {
+          roundTime = clock.restart();
+          gameState = GameState::Playing;
+        }
+      }
+    }
 
     if (Keyboard::isKeyPressed(Keyboard::Escape)) {
       window.close();
     }
-    
-    if(gameState == GameState::Paused){
+    /**************restarting the Game***************/
 
+    if (gameState == GameState::GameOver) {
+      if (event.key.code == Keyboard::R) {
+        gameState = GameState::Playing;
+      }
+      if (gameState == GameState::Playing) {
+        shooter.spawn(1920 / 2, 1080 - 100);
+        delete[] enemies;
+        for (int i = 0; i < 100; i++) {
+          shooterBullets[i].stop();
+        }
+        bomb.stop();
+        livingEnemies = 60;
+        enemies = createEnemyLines(1920.0f);
+        roundTime = clock.restart();
+      }
     }
 
     if (gameState == GameState::Playing) {
-
+      roundTime += dt;
       if (Keyboard::isKeyPressed(Keyboard::Left)) {
         shooter.moveLeft();
       } else {
@@ -89,19 +130,30 @@ int main() {
       } else {
         shooter.stopRight();
       }
-      // handle bullets for shooter
+      //***************************** handle bullets for shooter
       if (Keyboard::isKeyPressed(Keyboard::Space)) {
-        if (gameTime.asMilliseconds() - lastPressed.asMilliseconds() >
-            1000 / fireRate) {
-          shooterBullets[currentBullet].shoot(shooter.getCenter().x,
-                                              shooter.getCenter().y);
-          currentBullet++;
-          totallBullets--;
-          if (currentBullet > 99) {
-            currentBullet = 0;
-          }
+        if (totallBullets > 0) {
+          if (gameTime.asMilliseconds() - lastPressed.asMilliseconds() >
+              1000 / fireRate) {
+            shooterBullets[currentBullet].shoot(shooter.getCenter().x,
+                                                shooter.getCenter().y);
+            currentBullet++;
+            totallBullets--;
+            if (currentBullet > 99) {
+              currentBullet = 0;
+            }
 
-          lastPressed = gameTime;
+            lastPressed = gameTime;
+          }
+        } else {
+          gameState = GameState::GameOver;
+          gameoverText.setCharacterSize(100);
+          gameoverText.setFillColor(Color::Red);
+          gameoverText.setString("Out of Ammo nigga");
+          FloatRect textRect = gameoverText.getLocalBounds();
+          gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
+                                 textRect.top + textRect.height / 2.0f);
+          gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
         }
       }
 
@@ -110,61 +162,103 @@ int main() {
       if (enemies[randomBomber].isAlive() && !bomb.isInFlight())
         bomb.shoot(enemies[randomBomber].getCenter().x,
                    enemies[randomBomber].getCenter().y);
-    }//PlayingState
+    } // PlayingState
     /*
      *****************************
      * updating the game
      *****************************
      */
-
-if(gameState == GameState::Playing){
     float dtAsSeconds = dt.asSeconds();
     shooter.update(dt.asSeconds());
+    if (gameState == GameState::Playing) {
 
-    for (int i = 0; i < 60; i++) {
-      if (godown == true)
-        enemies[i].moveDown();
-      enemies[i].update(dtAsSeconds);
-    }
-    if (godown == false) {
       for (int i = 0; i < 60; i++) {
-        if (enemies[i].getCenter().x + enemies[i].getPosition().width / 2 + 5 >
-                1920 ||
-            enemies[i].getPosition().left < 0) {
-          godown = true;
-          break;
+        if (godown == true)
+          enemies[i].moveDown();
+        enemies[i].update(dtAsSeconds);
+      }
+      if (godown == false) {
+        for (int i = 0; i < 60; i++) {
+          if (enemies[i].getCenter().x + enemies[i].getPosition().width / 2 +
+                      5 >
+                  1920 ||
+              enemies[i].getPosition().left < 0) {
+            godown = true;
+            break;
+          }
+        }
+      } else {
+        godown = false;
+      }
+
+      // updating bullets in flight
+      dtAsSeconds = dt.asSeconds();
+      for (int i = 0; i < 100; i++) {
+        shooterBullets[i].update(dtAsSeconds);
+
+        for (int j = 0; j < 60; j++) {
+          /**********************checking enemies collision with shooter*******/
+          if (shooter.getPosition().top < enemies[j].getPosition().top + enemies[j].getPosition().height) {
+            gameState = GameState ::GameOver;
+            gameoverText.setFillColor(Color::Red);
+            gameoverText.setString("GAME OVER!");
+            FloatRect textRect = gameoverText.getLocalBounds();
+            gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
+                                   textRect.top + textRect.height / 2.0f);
+            gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+          }
+
+          /*********************** Checking for enemy Hit *******************/
+          if (shooterBullets[i].getPosition().intersects(
+                  enemies[j].getPosition()) &&
+              enemies[j].isAlive() && shooterBullets[i].isInFlight()) {
+            enemies[j].hit();
+            livingEnemies--;
+            shooterBullets[i].stop();
+          }
         }
       }
-    } else {
-      godown = false;
-    }
-
-    // updating bullets in flight
-    dtAsSeconds = dt.asSeconds();
-    for (int i = 0; i < 100; i++) {
-      shooterBullets[i].update(dtAsSeconds);
-      for (int j = 0; j < 60; j++) {
-        if (shooterBullets[i].getPosition().intersects(
-                enemies[j].getPosition()) &&
-            enemies[j].isAlive() && shooterBullets[i].isInFlight()) {
-          enemies[j].hit();
-          shooterBullets[i].stop();
-        }
+      if (livingEnemies == 0) {
+        gameState = GameState::GameOver;
+        gameoverText.setFont(digitalFont);
+        gameoverText.setCharacterSize(150);
+        gameoverText.setFillColor(Color::Green);
+        gameoverText.setString("You Win Nigga :) ");
+        FloatRect textRect = gameoverText.getLocalBounds();
+        gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
+                               textRect.top + textRect.height / 2.0f);
+        gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
       }
-    }
 
-    // bombs
+      // bombs
 
-    bomb.update(dt.asSeconds());
-    if (bomb.getPosition().top > 1080)
-      bomb.stop();
-    if (bomb.getPosition().intersects(shooter.getPosition())) {
-      if (shooter.isAlive()) {
-        shooter.hit();
+      bomb.update(dt.asSeconds());
+      if (bomb.getPosition().top > 1080)
         bomb.stop();
+      if (bomb.getPosition().intersects(shooter.getPosition())) {
+        if (shooter.isAlive()) {
+          shooter.hit();
+          bomb.stop();
+        }
+        if (!shooter.isAlive()) {
+          gameoverText.setFillColor(Color::Red);
+          gameoverText.setString("GAME OVER!");
+          FloatRect textRect = gameoverText.getLocalBounds();
+          gameoverText.setOrigin(textRect.left + textRect.width / 2.0f,
+                                 textRect.top + textRect.height / 2.0f);
+          gameoverText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+          gameState = GameState::GameOver;
+        }
       }
     }
-}
+
+    std::stringstream ss;
+
+    ss << "Lives: " << shooter.shootersLive()
+       << "\n\nTime : " << roundTime.asMilliseconds() / 1000.0
+       << "\n\nAmmo : " << totallBullets;
+    hud.setString(ss.str());
+
     /*
      *****************************
      * drawing the Game
@@ -185,6 +279,12 @@ if(gameState == GameState::Playing){
       window.draw(bomb.getShape());
     }
     window.draw(shooter.getShape());
+    if (gameState == GameState::GameOver || gameState == GameState::Starting ||
+        gameState == GameState::Paused) {
+      window.draw(gameoverText);
+    }
+
+    window.draw(hud);
     window.display();
   }
 }

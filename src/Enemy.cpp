@@ -5,7 +5,7 @@ using namespace sf;
 Enemy::Enemy() {
   m_MovingDown = false;
   m_MovingHoriz = true;
-  m_SpeedX = 100.0f;
+  m_SpeedX = 200.0f;
 }
 
 void Enemy::spawn(float startX, float startY) {

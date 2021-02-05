@@ -13,6 +13,7 @@ private:
 
 public:
   Shooter(float startX, float startY);
+  void spawn(float startX, float startY);
   void moveLeft();
   Vector2f getCenter();
   void moveRight();
@@ -21,6 +22,7 @@ public:
   bool isAlive();
   bool increaseHealth();
   bool hit();
+  int shootersLive();
   FloatRect getPosition();
   Sprite getShape();
   void update(float dt);

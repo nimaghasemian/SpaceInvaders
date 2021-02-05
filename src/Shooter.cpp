@@ -10,11 +10,21 @@ Shooter::Shooter(float startX, float startY) {
   m_Sprite.setOrigin(Vector2f(64, 64));
   m_Sprite.setPosition(m_Position);
 }
+void Shooter::spawn(float startX, float startY) {
+  m_lives = 3;
+  m_Sprite.setTexture(
+      TextureHolder::GetTexture("resorces/graphics/space-invaders(2).png"));
+  m_Position.x = startX;
+  m_Position.y = startY;
+  m_Sprite.setOrigin(Vector2f(64, 64));
+  m_Sprite.setPosition(m_Position);
+}
 Vector2f Shooter::getCenter() { return m_Position; }
 bool Shooter::hit() {
   m_lives--;
   return (m_lives > 0);
 }
+int Shooter::shootersLive() { return m_lives; }
 void Shooter::moveLeft() { m_MovingLeft = true; }
 void Shooter::moveRight() { m_MovingRight = true; }
 void Shooter::stopLeft() { m_MovingLeft = false; }
