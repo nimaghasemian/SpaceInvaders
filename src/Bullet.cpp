@@ -11,7 +11,7 @@ void Bullet::shoot(float startX, float startY) {
 }
 bool Bullet::isInFlight() { return m_InFlight; }
 void Bullet::setType(int type) {
-  m_type = type;
+
   if (m_type == 2) {
     m_Sprite.setTexture(
         TextureHolder::GetTexture("resorces/graphics/shooter-bullet-3-8.png"));

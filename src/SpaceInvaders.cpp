@@ -98,6 +98,7 @@ startSound.setBuffer(startBuffer);
   int livingEnemies = 60;
   bool godown = false;    
   Time roundTime;
+  float highScore = 0;
 
   /*******MAIN GAME LOOP**********/
 
@@ -152,6 +153,7 @@ startSound.setBuffer(startBuffer);
         }
         bomb.stop();
         livingEnemies = 60;
+        totallBullets = 200;
         enemies = createEnemyLines(1920.0f);
         roundTime = clock.restart();
       }
@@ -263,6 +265,11 @@ startSound.setBuffer(startBuffer);
       }
       if (livingEnemies == 0) {
         gameState = GameState::GameOver;
+        float score = roundTime.asSeconds()/10;
+        if ( score < highScore)
+          highScore = score;
+        else if(highScore == 0)
+          highScore = score;
         gameoverText.setFont(digitalFont);
         gameoverText.setCharacterSize(150);
         gameoverText.setFillColor(Color::Green);
@@ -298,9 +305,10 @@ startSound.setBuffer(startBuffer);
 
     std::stringstream ss;
 
-    ss << "Lives: " << shooter.shootersLive()
-       << "\n\nTime : " << roundTime.asMilliseconds() / 1000.0
-       << "\n\nAmmo : " << totallBullets;
+    ss << "High Score: " << highScore
+       << "\n\nLives: " << shooter.shootersLive()
+       << "\tAmmo : " << totallBullets
+       << "\n\nTime : " << roundTime.asMilliseconds() / 1000.00;
     hud.setString(ss.str());
 
     /*
